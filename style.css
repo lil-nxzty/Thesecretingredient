@@ -1,0 +1,14 @@
+#img {
+    display: flex;
+    justify-content: center;
+    width: 500px;
+    max-width: 90%;
+    margin: auto;
+}
+#texti {
+    max-width: 600px;
+    margin: 20px auto;
+    text-align: center;
+    line-height: 1.6;
+    font-size: 18px;
+}
