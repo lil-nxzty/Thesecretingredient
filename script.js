@@ -14,7 +14,7 @@ class Scene {
         let charIndex = 0;
         let speed = 50;
 
-        const self = this; // ✅ fix "this"
+        const self = this;
 
         geti("img").src = this.img;
         geti("texti").innerText = "";
@@ -22,17 +22,25 @@ class Scene {
         // clear buttons immediately
         const choicesDiv = geti("choices");
         choicesDiv.innerHTML = "";
-
-        const intervalID = setInterval(() => typeWriterStep(self.text), speed);
+        const timeoutID = setTimeout(() => typeWriterStep(self.text), speed);
 
         function typeWriterStep(text) {
             const sound = geti("typeSound");
-
             if (typeof text === "string" && charIndex < text.length) {
                 displayedText += text[charIndex];
+                const char = text[charIndex];
+                const isPauseChar =
+                    char === "?" ||
+                    char === ";" ||
+                    (
+                        char === "." &&
+                        text[charIndex + 1] === "." &&
+                        text[charIndex + 2] === "."
+                    );
+                    
+                if (isPauseChar) {let speed = 80};
                 geti("texti").innerText = displayedText;
 
-                // 🔊 reduce spam
                 if (charIndex % 2 === 0) {
                     sound.currentTime = 0;
                     sound.play();
@@ -40,14 +48,13 @@ class Scene {
 
                 charIndex++;
             } else {
-                clearInterval(intervalID);
-                showChoices.call(self); // ✅ correct context
+                clearTimeout(timeoutID);
+                showChoices.call(self); // correct context
             }
         }
     }
 }
 
-// ✅ moved OUTSIDE class
 function showChoices() {
     const choicesDiv = geti("choices");
 
@@ -68,7 +75,7 @@ const Scenes = {
     stadium: new Scene(
         "stadium",
         "scene1.jpg",
-        "You are sitting in a stadium watching your cousin's baseball team play...",
+        "You are sitting in a stadium watching your cousin's baseball team play; They are incredibly trash",
         [
             { text: "Reject the informal invitation", next: "stadium1" },
             { text: "Duck", next: "follow" }
