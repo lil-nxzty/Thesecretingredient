@@ -5,10 +5,15 @@
     max-width: 90%;
     margin: auto;
 }
+.container{display: inline-block}
 #texti {
-    max-width: 600px;
     margin: 20px auto;
     text-align: center;
     line-height: 1.6;
     font-size: 18px;
+    border-right: 5px solid;
+    
+    width: 100%;
+    overflow: hidden;
+    animation: typing 2s steps(123), blink-cursor .4s step-end infinite alternate;
 }

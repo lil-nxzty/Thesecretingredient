@@ -2,77 +2,109 @@ const geti = (str) => document.getElementById(str);
 
 // Scene class
 class Scene {
-    constructor(img, text, choices) {
+    constructor(id, img, text, choices) {
+        this.id = id;
         this.img = img;
         this.text = text;
         this.choices = choices;
     }
 
     render() {
-        // Set image and text
-        geti("img").src = this.img;
-        geti("texti").innerText = this.text;
+        let displayedText = "";
+        let charIndex = 0;
+        let speed = 50;
 
-        // Get choices container
+        const self = this; // ✅ fix "this"
+
+        geti("img").src = this.img;
+        geti("texti").innerText = "";
+
+        // clear buttons immediately
         const choicesDiv = geti("choices");
         choicesDiv.innerHTML = "";
 
-        // Create buttons for each choice
-        this.choices.forEach(choice => {
-            const btn = document.createElement("button");
-            btn.innerText = choice.text;
+        const intervalID = setInterval(() => typeWriterStep(self.text), speed);
 
-            btn.addEventListener("click", () => {
-                pageManager(choice.next);
-            });
+        function typeWriterStep(text) {
+            const sound = geti("typeSound");
 
-            choicesDiv.appendChild(btn);
-        });
+            if (typeof text === "string" && charIndex < text.length) {
+                displayedText += text[charIndex];
+                geti("texti").innerText = displayedText;
+
+                // 🔊 reduce spam
+                if (charIndex % 2 === 0) {
+                    sound.currentTime = 0;
+                    sound.play();
+                }
+
+                charIndex++;
+            } else {
+                clearInterval(intervalID);
+                showChoices.call(self); // ✅ correct context
+            }
+        }
     }
 }
 
-// All scenes
-const scenes = [
+// ✅ moved OUTSIDE class
+function showChoices() {
+    const choicesDiv = geti("choices");
 
-    new Scene(
+    this.choices.forEach(choice => {
+        const btn = document.createElement("button");
+        btn.innerText = choice.text;
+
+        btn.addEventListener("click", () => {
+            pageManager(choice.next);
+        });
+
+        choicesDiv.appendChild(btn);
+    });
+}
+
+// Scenes
+const Scenes = {
+    stadium: new Scene(
+        "stadium",
         "scene1.jpg",
-        "You are sitting in a stadium watching your cousin's baseball team play; they are incredibly bad.",
+        "You are sitting in a stadium watching your cousin's baseball team play...",
         [
-            { text: "Catch the ball", next: 1 },
-            { text: "Duck", next: 2 }
+            { text: "Reject the informal invitation", next: "stadium1" },
+            { text: "Duck", next: "follow" }
         ]
     ),
 
-    new Scene(
-        "scene2.jpg",
+    stadium1: new Scene(
+        "stadium1",
+        "scene1.jpg",
         "You catch the ball! The crowd goes wild.",
         [
-            { text: "Celebrate", next: 3 }
+            { text: "Celebrate", next: "die" }
         ]
     ),
 
-    new Scene(
+    die: new Scene(
+        "die",
         "scene3.jpg",
         "You duck, and someone behind you gets hit.",
-        [
-            { text: "Apologize", next: 3 }
-        ]
+        []
     ),
 
-    new Scene(
+    follow: new Scene(
+        "follow",
         "scene4.jpg",
         "The game continues...",
         []
     )
-
-];
+};
 
 // Scene loader
-function pageManager(n) {
-    scenes[n].render();
+function pageManager(property) {
+    Scenes[property].render();
 }
 
-// Start game when page loads
-window.addEventListener("load", function() {
-    pageManager(0);
+// Start game
+window.addEventListener("load", function () {
+    pageManager("stadium");
 });
