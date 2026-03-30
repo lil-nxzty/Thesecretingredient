@@ -1,9 +1,7 @@
 const geti = (str) => document.getElementById(str);
 
-// Scene class
 class Scene {
-    constructor(id, img, text, choices) {
-        this.id = id;
+    constructor(img, text, choices) {
         this.img = img;
         this.text = text;
         this.choices = choices;
@@ -12,7 +10,7 @@ class Scene {
     render() {
         let displayedText = "";
         let charIndex = 0;
-        let speed = 50;
+        let speed = 100;
 
         const self = this;
 
@@ -26,30 +24,29 @@ class Scene {
 
         function typeWriterStep(text) {
             const sound = geti("typeSound");
+            let delay = speed;
             if (typeof text === "string" && charIndex < text.length) {
-                displayedText += text[charIndex];
                 const char = text[charIndex];
                 const isPauseChar =
                     char === "?" ||
                     char === ";" ||
                     (
                         char === "." &&
-                        text[charIndex + 1] === "." &&
-                        text[charIndex + 2] === "."
+                        (text[charIndex + 1] || text[charIndex - 1]) === "." &&
+                        (text[charIndex + 2] || text[charIndex - 2]) === "."
                     );
-                    
-                if (isPauseChar) {let speed = 80};
+                
+                if (isPauseChar) {delay = 500;};
+                sound.currentTime = 0;
+                sound.volume = 0.5;
+                sound.play();
+                displayedText += char;
                 geti("texti").innerText = displayedText;
-
-                if (charIndex % 2 === 0) {
-                    sound.currentTime = 0;
-                    sound.play();
-                }
-
                 charIndex++;
+                setTimeout(() => typeWriterStep(text), delay);
             } else {
                 clearTimeout(timeoutID);
-                showChoices.call(self); // correct context
+                showChoices.call(self);
             }
         }
     }
@@ -73,7 +70,6 @@ function showChoices() {
 // Scenes
 const Scenes = {
     stadium: new Scene(
-        "stadium",
         "scene1.jpg",
         "You are sitting in a stadium watching your cousin's baseball team play; They are incredibly trash",
         [
@@ -83,7 +79,6 @@ const Scenes = {
     ),
 
     stadium1: new Scene(
-        "stadium1",
         "scene1.jpg",
         "You catch the ball! The crowd goes wild.",
         [
@@ -92,14 +87,12 @@ const Scenes = {
     ),
 
     die: new Scene(
-        "die",
         "scene3.jpg",
         "You duck, and someone behind you gets hit.",
         []
     ),
 
     follow: new Scene(
-        "follow",
         "scene4.jpg",
         "The game continues...",
         []
