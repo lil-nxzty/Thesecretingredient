@@ -165,7 +165,7 @@ const Scenes = {
         ]
     ),
     target2: new Scene(
-        "target.png",
+        "target2.png",
         "You decide that this conversation is too corny and ban both of them from life. They were wearing masks so you couldn't see their faces, the ceo asks you to check their faces to see if they were the right targets. To your surprise and horror, they were your cousins, parents.",
         [
             { text: "Next", next: "death2" }
@@ -179,7 +179,7 @@ const Scenes = {
         ]
     ),
     escape: new Scene(
-        "escape.png",
+        "deathofastar.png",
         "An idea comes to your mind, but how will you do it?",
         [
             { text: "Run to the exit", next: "fight" },
@@ -188,7 +188,7 @@ const Scenes = {
     ),
 
     fight: new Scene(
-        "go.png",
+        "deathofastar.png",
         "You are no match for the ceo he kills you with his bare (soft) hands",
         [
         ]
